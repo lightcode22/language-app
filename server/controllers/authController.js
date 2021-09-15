@@ -32,9 +32,10 @@ exports.login = catchAsync(async (req, res) => {
 		return res.status(401).json("wrong_credentials");
 	}
 
+	// выдать пару токенов
 	jwtHelper
 		.createTokens(user._id, res)
-		.then((result) => {
+		.then(() => {
 			res.status(200).json({
 				status: "success",
 				data: {
@@ -49,18 +50,21 @@ exports.login = catchAsync(async (req, res) => {
 
 // = = = = = = = = = = выход из системы
 exports.logout = catchAsync(async (req, res) => {
+	const refreshToken = req.cookies["refresh-token"];
+
 	if (req.cookies["access-token"]) {
 		cookies.set("access-token", { expires: Date.now() });
 	}
 
 	if (req.cookies["refresh-token"]) {
 		cookies.set("refresh-token", { expires: Date.now() });
+		await jwtHelper.deleteRefreshToken(refreshToken);
 	}
 
-	// удалить refreshToken из базы !!!!!!
-
 	// нужно изменить статус
-	return res.status(200).json("you've been successfully logged out");
+	return res
+		.status(200)
+		.json("you've been successfully logged out. do svidaniya!");
 });
 
 // = = = = = = = = = = обработка регистрации нового пользователя
@@ -140,32 +144,58 @@ exports.checkToken = catchAsync(async (req, res, next) => {
 	let token = req.cookies["access-token"];
 
 	if (!token) {
-		//refreshToken
-		return next();
+		const refreshToken = req.cookies["refresh-token"];
+
+		if (!refreshToken) {
+			return next();
+		}
+
+		await promisify(jwt.verify)(refreshToken, process.env.REFRESH_TOKEN_SECRET)
+			.then((payload) => {
+				console.log(payload);
+				console.log(payload.tokenId);
+				Token.findOne({ tokenId: payload.tokenId });
+				return payload;
+			})
+			.then((payload) => {
+				jwtHelper.refreshTokenPair(payload);
+			})
+			.then((result) => {
+				token = result;
+			})
+			.then.catch((e) => {
+				console.log("недействительный refreshToken");
+				cookies.set("refresh-token", { expires: Date.now() });
+				return next();
+			});
 	}
 
+	// расшифрованный access-токен
 	let decodedToken;
 
-	await promisify(jwt.verify)(token, process.env.JWT_SECRET)
+	await promisify(jwt.verify)(token, process.env.ACCESS_TOKEN)
 		.then((token) => {
 			decodedToken = token;
 		})
 		.catch((e) => {
 			cookies.set("access-token", { expires: Date.now() });
-			// cookies.set("refresh-token", { expires: Date.now() });
+			// получить новый access-token?
+			return next();
 		});
 
 	// поиск пользователя с таким токеном
 	// нет пользователя = токен недействителен -- разлогинить - удалить refresh-токен
 	const currentUser = await User.findById(decodedToken.id);
+
 	if (!currentUser) {
 		cookies.set("access-token", { expires: Date.now() });
-		cookies.set("refresh-token", { expires: Date.now() });
-		// удалить токен из базы
 
-		// return next(
-		// 	new AppError("Пользователя с таким токеном больше не существует", 401)
-		// );
+		if (req.cookies["refresh-token"]) {
+			cookies.set("refresh-token", { expires: Date.now() });
+			await jwtHelper.deleteRefreshToken(req.cookies["refresh-token"]);
+		}
+
+		console.log("такого пользователя больше не существует");
 		return next();
 	}
 
@@ -174,7 +204,9 @@ exports.checkToken = catchAsync(async (req, res, next) => {
 	if (currentUser.changedPasswordAfter(decodedToken.iat)) {
 		cookies.set("access-token", { expires: Date.now() });
 		cookies.set("refresh-token", { expires: Date.now() });
-		// удалить оба токена
+
+		await jwtHelper.deleteRefreshToken(req.cookies["refresh-token"]);
+
 		return next();
 	}
 
