@@ -67,7 +67,14 @@
 						>Описание</label
 					>
 					<textarea
-						class="border border-gray-900 rounded-lg w-full resize-none h-40 p-2"
+						class="
+							border border-gray-900
+							rounded-lg
+							w-full
+							resize-none
+							h-40
+							p-2
+						"
 						id="desc"
 						type="text"
 						name="description"
@@ -79,7 +86,16 @@
 			<div class="col-span-2 mx-auto w-24">
 				<button>
 					<base-button
-						class=" rounded-md py-2 px-4 text-center text-sm bg-blue-500 hover:bg-blue-400 text-white font-medium"
+						class="
+							rounded-md
+							py-2
+							px-4
+							text-center text-sm
+							bg-blue-500
+							hover:bg-blue-400
+							text-white
+							font-medium
+						"
 						>Добавить</base-button
 					>
 				</button>
@@ -197,7 +213,6 @@ export default {
 						}
 					})
 					.catch((error) => {
-						console.log(error);
 						submitFailed.value = true;
 					});
 			}

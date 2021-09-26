@@ -11,7 +11,6 @@ axiosInstance.interceptors.response.use(
 	// со статусом 2xx
 	// автоматически оборачивает в промис
 	(response) => {
-		console.log(response);
 		return response;
 	},
 	// с любым другим статусом
@@ -22,6 +21,13 @@ axiosInstance.interceptors.response.use(
 				data: error.response,
 			});
 		}
+
+		// if (error.response.status === 404) {
+		// 	return Promise.resolve({
+		// 		status: 404,
+		// 		data: error.response,
+		// 	});
+		// }
 
 		return Promise.reject(error);
 	}

@@ -1,6 +1,6 @@
 <template>
 	<!-- исправить ширину для мобильных -->
-	<div class="mx-auto" style="width:26rem;">
+	<div class="mx-auto" style="width: 26rem">
 		<div class="w-auto h-screen flex items-center mx-3 w-96 montserrat">
 			<base-auth-form
 				header-text="Войти в аккаунт"
@@ -18,7 +18,20 @@
 							>имя пользователя</label
 						>
 						<input
-							class="w-full shadow appearance-none text-sm font-medium border rounded py-2 px-2 text-gray-800 leading-tight focus:outline-none"
+							class="
+								w-full
+								shadow
+								appearance-none
+								text-sm
+								font-medium
+								border
+								rounded
+								py-2
+								px-2
+								text-gray-800
+								leading-tight
+								focus:outline-none
+							"
 							name="username"
 							type="text"
 							placeholder=""
@@ -36,7 +49,20 @@
 							>пароль</label
 						>
 						<input
-							class="w-full shadow appearance-none text-sm font-medium border rounded py-2 px-2 text-gray-800 leading-tight focus:outline-none"
+							class="
+								w-full
+								shadow
+								appearance-none
+								text-sm
+								font-medium
+								border
+								rounded
+								py-2
+								px-2
+								text-gray-800
+								leading-tight
+								focus:outline-none
+							"
 							name="password"
 							type="password"
 							placeholder=""
@@ -126,7 +152,6 @@ export default {
 				submitErrors.value.push("password_empty");
 			}
 
-			// если на этапе первичной проверки нет ошибок
 			if (!submitErrors.value.length) {
 				const userCredentials = {
 					username: username.value,
@@ -138,13 +163,11 @@ export default {
 						if (res.status === 401) {
 							submitErrors.value = res.data;
 						} else {
-							console.log("залогинился! Перенаправляю на главную!");
 							store.commit("logIn", res.data.role);
 							router.replace("/");
 						}
 					})
 					.catch((error) => {
-						// если произошла ошибка, независящая от пользователя
 						console.log(error);
 						submitFailed.value = true;
 					});

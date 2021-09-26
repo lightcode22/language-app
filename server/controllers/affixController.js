@@ -33,11 +33,9 @@ exports.createAffix = catchAsync(async (req, res) => {
 
 	const duplicateFields = [];
 
-	// попытка найти в базе аффикс с такими же полями korean и roman - дубликаты
 	let query = Affix.find();
 	query = query.or([{ korean }, { roman }]);
 
-	// фильтр только необходимых полей
 	query.projection("roman korean");
 
 	const result = await query;
@@ -50,7 +48,7 @@ exports.createAffix = catchAsync(async (req, res) => {
 		duplicateFields.push("korean_taken");
 	}
 
-	// если хоть одно из полей дублируется - ошибка 400
+	// если хоть одно из полей дублируется
 	if (duplicateFields.length) {
 		return res.status(400).json(duplicateFields);
 	}

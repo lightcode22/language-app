@@ -1,5 +1,5 @@
 <template>
-	<main class="container mx-auto">
+	<main class="container mx-auto p-4 md:p-0 monserrat">
 		<router-view name="header"></router-view>
 		<router-view name="main"></router-view>
 		<!-- <Footer /> -->
@@ -35,16 +35,4 @@ body {
 .montserrat {
 	font-family: "Montserrat", sans-serif;
 }
-
-/* #app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-}
-
-#nav a.router-link-exact-active {
-  color: #42b983;
-} */
 </style>

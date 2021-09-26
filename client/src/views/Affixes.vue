@@ -1,8 +1,13 @@
 <template>
-	<div class="w-auto mx-3 montserrat">
+	<div class="w-auto montserrat">
 		<div class="flex justify-between mb-12 mt-3">
 			<span>Результатов: {{ count }}</span>
-			<div>здесь будет поисковая строка</div>
+			<div>
+				<input
+					class="border-2 border-black"
+					value="здесь будет поисковая строка"
+				/>
+			</div>
 			<div v-if="isAllowedToAdd" class="">
 				<router-link to="/affixes/addAffix"
 					><base-button
@@ -39,8 +44,6 @@ export default {
 	setup() {
 		const store = useStore();
 
-		console.log(store.state.role);
-
 		const affixes = ref([]);
 
 		const allAffixes = computed(() => {
@@ -55,7 +58,7 @@ export default {
 			return ["moderator", "admin"].includes(store.state.role);
 		});
 
-		onMounted(function () {
+		onMounted(() => {
 			getAllAffixes();
 		});
 
@@ -63,7 +66,7 @@ export default {
 			try {
 				affixes.value = await getAll();
 			} catch (err) {
-				console.log("произошла ошибка");
+				console.log("ошибка произошла");
 			}
 		}
 

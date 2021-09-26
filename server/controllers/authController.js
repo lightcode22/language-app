@@ -8,7 +8,6 @@ const jwtHelper = require("../utils/jwtHelper");
 const bcrypt = require("bcryptjs");
 const promisify = require("util").promisify;
 
-// = = = = = = = = = = обработка входа в систему
 exports.login = catchAsync(async (req, res) => {
 	const { username, password } = req.body;
 
@@ -25,7 +24,6 @@ exports.login = catchAsync(async (req, res) => {
 		return res.status(401).json(submitErrors);
 	}
 
-	// по умолчанию при запросе поле password не отображается - поэтому select
 	const user = await User.findOne({ username }).select("+password");
 
 	if (!user || !(await bcrypt.compare(password, user.password))) {
@@ -48,7 +46,6 @@ exports.login = catchAsync(async (req, res) => {
 		});
 });
 
-// = = = = = = = = = = выход из системы
 exports.logout = catchAsync(async (req, res) => {
 	const refreshToken = req.cookies["refresh-token"];
 
@@ -62,12 +59,9 @@ exports.logout = catchAsync(async (req, res) => {
 	}
 
 	// нужно изменить статус
-	return res
-		.status(200)
-		.json("you've been successfully logged out. do svidaniya!");
+	return res.status(200).json("you've been successfully logged out");
 });
 
-// = = = = = = = = = = обработка регистрации нового пользователя
 exports.register = catchAsync(async (req, res) => {
 	let { username, email, password } = req.body;
 
@@ -114,14 +108,13 @@ exports.register = catchAsync(async (req, res) => {
 		return res.status(400).json(submitErrors);
 	}
 
-	// хэширует пароль из формы с saltRounds/cost = 12
 	password = await bcrypt.hash(password, 12);
 
 	const newUser = await User.create({
 		username,
 		email,
 		password,
-		// passwordChangedAt: req.body.passwordChangedAt,
+		registrationDate: new Date(),
 	});
 
 	jwtHelper
@@ -150,48 +143,44 @@ exports.checkToken = catchAsync(async (req, res, next) => {
 			return next();
 		}
 
-		await promisify(jwt.verify)(refreshToken, process.env.REFRESH_TOKEN_SECRET)
-			.then((payload) => {
-				console.log(payload);
-				console.log(payload.tokenId);
-				Token.findOne({ tokenId: payload.tokenId });
-				return payload;
-			})
-			.then((payload) => {
-				jwtHelper.refreshTokenPair(payload);
-			})
-			.then((result) => {
-				token = result;
-			})
-			.then.catch((e) => {
-				console.log("недействительный refreshToken");
-				cookies.set("refresh-token", { expires: Date.now() });
-				return next();
-			});
+		let refreshPayload;
+
+		try {
+			refreshPayload = await promisify(jwt.verify)(
+				refreshToken,
+				process.env.REFRESH_TOKEN_SECRET
+			);
+		} catch (e) {
+			console.log(e);
+		}
+
+		let tokenId = await Token.findOne({ userId: refreshPayload.userId });
+
+		token = await jwtHelper.refreshTokenPair(tokenId, res);
 	}
 
-	// расшифрованный access-токен
 	let decodedToken;
 
-	await promisify(jwt.verify)(token, process.env.ACCESS_TOKEN)
-		.then((token) => {
-			decodedToken = token;
-		})
-		.catch((e) => {
-			cookies.set("access-token", { expires: Date.now() });
-			// получить новый access-token?
-			return next();
-		});
+	try {
+		decodedToken = await promisify(jwt.verify)(
+			token,
+			process.env.ACCESS_TOKEN_SECRET
+		);
+	} catch (e) {
+		res.clearCookie("access-token", { path: "/" });
+	}
 
-	// поиск пользователя с таким токеном
-	// нет пользователя = токен недействителен -- разлогинить - удалить refresh-токен
-	const currentUser = await User.findById(decodedToken.id);
+	if (!decodedToken) {
+		return next();
+	}
+
+	const currentUser = await User.findById(decodedToken.userId);
 
 	if (!currentUser) {
-		cookies.set("access-token", { expires: Date.now() });
+		res.clearCookie("access-token", { path: "/" });
 
 		if (req.cookies["refresh-token"]) {
-			cookies.set("refresh-token", { expires: Date.now() });
+			res.clearCookie("refresh-token", { path: "/" });
 			await jwtHelper.deleteRefreshToken(req.cookies["refresh-token"]);
 		}
 
@@ -199,8 +188,6 @@ exports.checkToken = catchAsync(async (req, res, next) => {
 		return next();
 	}
 
-	// проверить, менялся ли пароль пользователя после выпуска токена
-	// оба токена не обновлялись вместе с паролем = токены устарели -- разлогинить
 	if (currentUser.changedPasswordAfter(decodedToken.iat)) {
 		cookies.set("access-token", { expires: Date.now() });
 		cookies.set("refresh-token", { expires: Date.now() });
@@ -214,17 +201,10 @@ exports.checkToken = catchAsync(async (req, res, next) => {
 	next();
 });
 
-// = = = = = = = = = =
-exports.checkAccess = () => {
-	const { userRole } = req.userRole;
-	console.log(`the userRole is: ${userRole}`);
-
-	if (!userRole) {
-		return next(new AppError("Вы не залогинены!", 401));
-	}
+exports.checkAccess = (req, res, next) => {
+	return res.status(200).json(req.userRole);
 };
 
-// = = = = = = = = = = разграничение доступа по ролям
 exports.restrictTo = (...roles) => {
 	return (req, _, next) => {
 		if (!roles.includes(req.userRole)) {

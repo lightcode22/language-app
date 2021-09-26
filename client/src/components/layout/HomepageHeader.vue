@@ -1,21 +1,16 @@
 <template>
-	<div class="w-auto sm:mx-3 mx-3">
+	<div class="w-auto bg-blue-100">
 		<nav
-			class="
-				flex flex-col
-				items-center
-				sm:flex-row sm:justify-between sm:h-20
-				list-none
-			"
+			class="flex flex-col items-center sm:flex-row sm:justify-between sm:h-20 list-none"
 		>
 			<li class="text-center">
-				<div class="sm:-mt-0.5">
-					<router-link to="/"
-						><span class="font-semibold text-red-500 text-lg sm:text-xl"
-							>app</span
-						>
-					</router-link>
-				</div>
+				<!-- <div class="sm:-mt-1"> -->
+				<router-link to="/"
+					><span class="font-semibold text-red-500 text-lg sm:text-xl"
+						>app</span
+					>
+				</router-link>
+				<!-- </div> -->
 			</li>
 
 			<li>

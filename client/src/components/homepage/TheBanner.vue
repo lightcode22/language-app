@@ -1,6 +1,6 @@
 <template>
 	<section class="my-2">
-		<base-card class="the-banner px-4 py-3 h-48 flex flex-row items-center"
+		<base-card class="the-banner py-3 h-48 flex flex-row items-center"
 			><div class="text-white text-3xl mx-auto">
 				BANNER PLACEHOLDER
 			</div></base-card

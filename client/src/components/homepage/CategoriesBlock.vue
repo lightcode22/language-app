@@ -3,7 +3,7 @@
 		<h3 class="my-4 text-xl font-semibold">Категории</h3>
 
 		<ul
-			class="grid grid-cols-2 gap-4 justify-items-stretch md:grid-cols-4 md:gap-8"
+			class="grid grid-cols-2 gap-x-4 justify-items-stretch md:grid-cols-4 md:gap-x-9"
 		>
 			<li v-for="(category, index) in categories" :key="index">
 				<router-link to="/affixes">

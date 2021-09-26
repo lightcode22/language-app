@@ -1,7 +1,6 @@
 const mongoose = require("mongoose");
 
 const dotenv = require("dotenv");
-
 dotenv.config({ path: "./config.env" });
 
 const DB = process.env.DATABASE.replace(
@@ -15,13 +14,6 @@ mongoose
 		useUnifiedTopology: true,
 	})
 	.then(() => console.log("successfully connected to Mongo database"));
-
-// mongoose
-// 	.connect(process.env.DATABASE_LOCAL, {
-// 		useNewUrlParser: true,
-// 		useUnifiedTopology: true,
-// 	})
-// 	.then(() => console.log("successfully connected to Mongo database"));
 
 const app = require("./app");
 

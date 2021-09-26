@@ -1,6 +1,6 @@
 <template>
 	<!-- исправить ширину для мобильных -->
-	<div class="mx-auto" style="width:26rem;">
+	<div class="mx-auto" style="width: 26rem">
 		<div class="w-auto h-screen flex items-center mx-4 w-96 montserrat">
 			<base-auth-form
 				header-text="Создать аккаунт"
@@ -18,7 +18,21 @@
 							>имя пользователя</label
 						>
 						<input
-							class="w-full shadow appearance-none text-sm font-medium border rounded py-2 px-2 mb-1 text-gray-800 leading-tight focus:outline-none"
+							class="
+								w-full
+								shadow
+								appearance-none
+								text-sm
+								font-medium
+								border
+								rounded
+								py-2
+								px-2
+								mb-1
+								text-gray-800
+								leading-tight
+								focus:outline-none
+							"
 							name="username"
 							type="text"
 							placeholder=""
@@ -36,7 +50,21 @@
 							>e-mail (необязательно)</label
 						>
 						<input
-							class="w-full shadow appearance-none text-sm font-medium border rounded py-2 px-2 mb-1 text-gray-800 leading-tight focus:outline-none"
+							class="
+								w-full
+								shadow
+								appearance-none
+								text-sm
+								font-medium
+								border
+								rounded
+								py-2
+								px-2
+								mb-1
+								text-gray-800
+								leading-tight
+								focus:outline-none
+							"
 							name="email"
 							type="email"
 							placeholder=""
@@ -54,7 +82,21 @@
 							>пароль</label
 						>
 						<input
-							class="w-full shadow appearance-none text-sm font-medium border rounded py-2 px-2 mb-1 text-gray-800 leading-tight focus:outline-none"
+							class="
+								w-full
+								shadow
+								appearance-none
+								text-sm
+								font-medium
+								border
+								rounded
+								py-2
+								px-2
+								mb-1
+								text-gray-800
+								leading-tight
+								focus:outline-none
+							"
 							name="password"
 							type="password"
 							placeholder=""
@@ -174,10 +216,6 @@ export default {
 				submitErrors.value.push("username_short");
 			}
 
-			// if (email.value === "") {
-			// 	submitErrors.value.push("email_empty");
-			// }
-
 			if (password.value === "") {
 				submitErrors.value.push("password_empty");
 			} else if (password.value.length < 8) {
@@ -191,8 +229,6 @@ export default {
 					password: password.value,
 				};
 
-				console.log("delaetsya zapros na server - register");
-
 				register(userCredentials)
 					.then((res) => {
 						if (res.status === 400) {
@@ -202,10 +238,7 @@ export default {
 						}
 						// если ошибок от БД нет
 						else {
-							console.log("зарегистрировался! Перенаправляю на главную!");
-							console.log("do kommita roli v state " + store.state.role);
 							store.commit("logIn", "admin");
-							console.log("posle kommita roli v state " + store.state.role);
 							router.replace("/");
 						}
 					})

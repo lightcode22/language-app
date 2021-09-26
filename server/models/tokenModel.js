@@ -6,6 +6,10 @@ const tokenSchema = new mongoose.Schema({
 		required: true,
 		unique: true,
 	},
+	userId: {
+		type: String,
+		required: true,
+	},
 });
 
 const Token = mongoose.model("Token", tokenSchema);

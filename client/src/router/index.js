@@ -1,7 +1,8 @@
 import { createRouter, createWebHistory } from "vue-router";
 import store from "../store/index";
+import AdminRoutes from "./adminRoutes";
+import AffixRoutes from "./affixRoutes";
 import { checkAccess } from "../../services/AuthService";
-import TheHeader from "../components/layout/TheHeader.vue";
 
 const routes = [
 	{
@@ -28,32 +29,8 @@ const routes = [
 		},
 		meta: { requiresUnauth: true },
 	},
-	{
-		path: "/affixes",
-		name: "Affixes",
-		components: {
-			header: TheHeader,
-			main: () => import("../views/Affixes.vue"),
-		},
-	},
-	{
-		path: "/affixes/:id",
-		name: "AboutAffix",
-		props: true,
-		components: {
-			header: TheHeader,
-			main: () => import("../views/AboutAffix.vue"),
-		},
-	},
-	{
-		path: "/affixes/addAffix",
-		name: "AddAffix",
-		components: {
-			header: TheHeader,
-			main: () => import("../views/AddAffix.vue"),
-		},
-		meta: { requiresAuth: true, roles: ["moderator", "admin"] },
-	},
+	...AffixRoutes,
+	...AdminRoutes,
 ];
 
 const router = createRouter({
@@ -61,32 +38,32 @@ const router = createRouter({
 	routes,
 });
 
-router.beforeEach(function(to, _, next) {
-	if (to.meta.requiresAuth) {
-		console.log("nujna autorizacia");
+router.beforeEach(async (to, _, next) => {
+	let role;
 
-		checkAccess()
-			.then((res) => {
-				if (res.status === 400) {
-					next("/");
-				} else if (res.status === 200) {
-					if (to.meta.roles && !to.meta.roles.includes(res.data)) {
-						next("/");
-					}
-
-					next();
-				} else {
-					// store.commit("logOut");
-					next("/");
-				}
-			})
-			.catch((error) => {
-				// если произошла ошибка, независящая от пользователя
-
-				console.log(error);
-			});
-	} else if (to.meta.requiresUnauth && !!store.state.role) {
+	try {
+		const data = await checkAccess();
+		role = data;
+	} catch (e) {
+		console.log(e);
+		// store.commit("logOut");
 		next("/");
+	}
+
+	if (to.meta.requiresAuth && role) {
+		if (to.meta.roles && !to.meta.roles.includes(role)) {
+			next("/");
+		}
+
+		next();
+	}
+
+	if (to.meta.requiresUnauth && !role) {
+		if (store.state.role) {
+			next("/");
+		} else {
+			next();
+		}
 	} else {
 		next();
 	}

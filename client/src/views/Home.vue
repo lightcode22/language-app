@@ -1,5 +1,5 @@
 <template>
-	<div class="w-auto mx-3">
+	<div class="w-auto">
 		<TheBanner />
 		<CategoriesBlock />
 	</div>

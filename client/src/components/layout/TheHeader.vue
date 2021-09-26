@@ -1,18 +1,9 @@
 <template>
-	<div class="w-auto sm:mx-3 mx-3">
+	<div class="w-auto bg-blue-100">
 		<nav class="flex items-center flex-row justify-between sm:h-20 list-none">
-			<li
-				class="text-center font-semibold text-red-500 text-lg sm:text-xl table"
-			>
+			<li class="text-center">
 				<router-link to="/">
-					<span
-						class="
-							table-cell
-							align-middle
-							font-semibold
-							text-red-500 text-lg
-							sm:text-xl
-						"
+					<span class="font-semibold text-red-500 text-lg sm:text-xl"
 						>app</span
 					></router-link
 				>
