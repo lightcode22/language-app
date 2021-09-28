@@ -8,44 +8,7 @@
 					value="здесь будет поисковая строка"
 				/>
 			</div>
-			<div class="">
-				<router-link to=""
-					><base-button
-						class="font-medium text-white inline-block"
-						:class="[
-							isUserFilterActive.value
-								? 'bg-blue-500 hover:bg-blue-600'
-								: 'bg-gray-300',
-						]"
-						@click="switchUserFilter"
-						>пользователи</base-button
-					></router-link
-				>
-				<router-link to=""
-					><base-button
-						class="font-medium bg text-white inline-block mx-4"
-						:class="[
-							isModeratorFilterActive.value
-								? 'bg-red-500 hover:bg-red-600'
-								: 'bg-gray-300',
-						]"
-						@click="switchModeratorFilter"
-						>модераторы</base-button
-					></router-link
-				>
-				<router-link to=""
-					><base-button
-						class="font-medium text-white inline-block"
-						:class="[
-							isAdminFilterActive.value
-								? 'bg-yellow-500 hover:bg-yellow-600'
-								: 'bg-gray-300',
-						]"
-						@click="switchAdminFilter"
-						>администраторы</base-button
-					></router-link
-				>
-			</div>
+			<FilterTags @filtersChange="showmeFilters" />
 		</div>
 
 		<div class="w-auto grid grid-cols-7 font-bold montserrat">
@@ -74,38 +37,11 @@ import { computed, ref, onMounted } from "vue";
 import { getAll } from "../../../services/AdminService";
 import BaseButton from "../../components/ui/BaseButton.vue";
 import UsersListItem from "./UsersListItem.vue";
+import FilterTags from "./FilterTags.vue";
 
 export default {
 	setup() {
 		const users = ref([]);
-
-		let userFilter = ref(true);
-		let moderatorFilter = ref(true);
-		let adminFilter = ref(true);
-
-		const switchUserFilter = () => {
-			userFilter.value = !userFilter.value;
-		};
-
-		const switchModeratorFilter = () => {
-			moderatorFilter.value = !moderatorFilter.value;
-		};
-
-		const switchAdminFilter = () => {
-			adminFilter.value = !adminFilter.value;
-		};
-
-		const isUserFilterActive = computed(() => {
-			return userFilter;
-		});
-
-		const isModeratorFilterActive = computed(() => {
-			return moderatorFilter;
-		});
-
-		const isAdminFilterActive = computed(() => {
-			return adminFilter;
-		});
 
 		const allUsers = computed(() => {
 			return users.value.users;
@@ -115,6 +51,12 @@ export default {
 			return users.value.result;
 		});
 
+		const showmeFilters = (value) => {
+			console.log("- - - - - - -");
+			console.log(value);
+			console.log("- - - - - - -");
+		};
+
 		onMounted(() => {
 			getAllUsers();
 		});
@@ -123,7 +65,7 @@ export default {
 			try {
 				users.value = await getAll();
 			} catch (err) {
-				console.log("ошибка произошла");
+				console.log("ошибочка произошла");
 			}
 		}
 
@@ -132,12 +74,8 @@ export default {
 			count: usersCount,
 			BaseButton,
 			UsersListItem,
-			isUserFilterActive,
-			isModeratorFilterActive,
-			isAdminFilterActive,
-			switchUserFilter,
-			switchModeratorFilter,
-			switchAdminFilter,
+			FilterTags,
+			showmeFilters,
 		};
 	},
 };
