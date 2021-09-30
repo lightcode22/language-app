@@ -44,6 +44,8 @@ export default {
 	setup() {
 		const store = useStore();
 
+		console.log(store.state.role);
+
 		const affixes = ref([]);
 
 		const allAffixes = computed(() => {

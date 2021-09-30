@@ -8,7 +8,7 @@ router
 	.route("/")
 	.get(affixController.getAll)
 	.post(
-		authController.restrictTo(["moderator", "admin"]),
+		authController.restrictTo("moderator", "admin"),
 		affixController.createAffix
 	);
 

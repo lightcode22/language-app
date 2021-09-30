@@ -1,8 +1,8 @@
 <template>
 	<div
-		@click="[$emit('switch', text), toggleActive()]"
+		@click="toggleActive"
 		class="font-medium text-sm bg text-white inline-block rounded-md mx-4 py-1 px-2 select-none cursor-pointer"
-		:class="[isActive ? active : 'bg-gray-300']"
+		:class="[active ? activeClass : 'bg-gray-300']"
 	>
 		{{ text }}
 	</div>
@@ -12,22 +12,24 @@
 import { ref } from "vue";
 
 export default {
-	props: ["content"],
-	setup(props) {
+	props: ["content", "isActive"],
+	setup(props, context) {
 		const tagInfo = ref(props.content);
 
-		const isActive = ref(true);
+		const active = ref(props.isActive);
 
 		const toggleActive = () => {
-			isActive.value = !isActive.value;
-			console.log(`${tagInfo.value.textContent} - ${isActive.value}`);
+			active.value = !active.value;
+
+			context.emit("switch", { name: tagInfo.value.name, activity: active });
 		};
 
 		return {
-			isActive,
+			active,
 			toggleActive,
 			text: tagInfo.value.textContent,
-			active: tagInfo.value.active,
+			name: tagInfo.value.name,
+			activeClass: tagInfo.value.activeClass,
 		};
 	},
 };

@@ -16,6 +16,12 @@ export default {
 	props: ["data"],
 	setup(props) {
 		const affix = { ...props.data };
+
+		affix.korean = affix.korean
+			.split("/")
+			.map((el) => "~" + el.trim())
+			.join(" / ");
+
 		const link = `/affixes/${affix.roman}`;
 		return { affix, link };
 	},

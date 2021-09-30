@@ -52,9 +52,7 @@ export default {
 		});
 
 		const showmeFilters = (value) => {
-			console.log("- - - - - - -");
 			console.log(value);
-			console.log("- - - - - - -");
 		};
 
 		onMounted(() => {
@@ -65,7 +63,7 @@ export default {
 			try {
 				users.value = await getAll();
 			} catch (err) {
-				console.log("ошибочка произошла");
+				console.log("ошибка произошла");
 			}
 		}
 
